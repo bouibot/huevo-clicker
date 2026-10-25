@@ -1,0 +1,24 @@
+{
+  "name": "huevo-clicker",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "huevo.su auto-clicker with auto-login. Single account, no proxies, no farm.",
+  "main": "clicker.mjs",
+  "scripts": {
+    "start": "node clicker.mjs",
+    "clicker": "node clicker.mjs",
+    "login": "node clicker.mjs --login-only"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "keywords": ["huevo", "clicker", "autoclicker", "autologin"],
+  "dependencies": {
+    "undici": "^8.12.2"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

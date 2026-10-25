@@ -1,0 +1,17 @@
+# Dependencies
+node_modules/
+
+# Secrets & local config
+creds.txt
+cookie.txt
+*.local.*
+
+# State / logs
+*.log
+*.pid
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

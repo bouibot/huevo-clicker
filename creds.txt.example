@@ -1,0 +1,6 @@
+# Логин/пароль для clicker.mjs
+# Формат: user=логин / pass=пароль
+# Или просто: логин : пароль
+
+user = magazinedreams
+pass = 77887788
