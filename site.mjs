@@ -278,10 +278,10 @@ export class Account {
       const hv = [...dataK].reverse().join(''); // их JS: data-k.split('').reverse().join('')
       const form = new URLSearchParams({
         hv, username: this.login, password: this.pass,
-        captcha_token: cap.token, captcha: code.trim().toUpperCase(),
+        captcha_token: cap.token, captcha: code.trim(),
         remember: 'on',
       });
-      this.log(`логин с капчей «${code.trim().toUpperCase()}» (попытка ${attempt})`);
+      this.log(`логин с капчей «${code.trim()}» (попытка ${attempt})`);
       const r = await this.req(`${BASE}/login`, {
         method: 'POST',
         headers: {
