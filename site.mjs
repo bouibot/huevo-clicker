@@ -369,6 +369,11 @@ export class Account {
       this.stats.earned += j.earned ?? 0;
       return j;
     }
+    // дневной кап достигнут — это НЕ ошибка и НЕ повод для релогина
+    if (j?.capped === true || j?.error === 'full') {
+      this.stats.errors++;
+      return { ok: false, capped: true, __http: r.status, ...(j ?? {}) };
+    }
     this.stats.errors++;
     return { __http: r.status, __text: r.text, ...(j ?? {}) };
   }
