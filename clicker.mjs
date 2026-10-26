@@ -19,6 +19,7 @@
 //   --captcha-key KEY    ключ 2captcha/rucaptcha для mode=api
 //   --captcha-endpoint U сервер капчи для mode=api (2captcha.com)
 //   --captcha-code CODE  готовый код капчи (для неинтерактивного запуска)
+//   --discord-webhook URL  слать картинку капчи в Discord (или env DISCORD_WEBHOOK)
 
 import { readFileSync, existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -48,6 +49,7 @@ if ((!USER || !PASS) && existsSync(credsFile)) {
   PASS ||= raw.match(/^\s*(?:pass|password)\s*[:=]\s*(.+)$/im)?.[1]?.trim() ?? '';
   process.env.CAPTCHA_MODE ||= raw.match(/^\s*captcha_mode\s*[:=]\s*(.+)$/im)?.[1]?.trim();
   process.env.CAPTCHA_KEY ||= raw.match(/^\s*captcha_key\s*[:=]\s*(.+)$/im)?.[1]?.trim();
+  process.env.DISCORD_WEBHOOK ||= raw.match(/^\s*discord_webhook\s*[:=]\s*(.+)$/im)?.[1]?.trim();
 }
 if (!USER || !PASS) {
   console.error('Нет логина/пароля: укажи --user/--pass или заполни creds.txt');
@@ -62,6 +64,7 @@ const DURATION = Number(arg('duration', 0));
 // ── солвер капчи ──
 const mode = arg('captcha-mode') || process.env.CAPTCHA_MODE || 'manual';
 const key = arg('captcha-key') || process.env.CAPTCHA_KEY || '';
+const webhook = arg('discord-webhook') || process.env.DISCORD_WEBHOOK || '';
 let solver;
 try {
   if (flag('captcha-code')) {
@@ -71,6 +74,7 @@ try {
     solver = makeSolver({
       mode,
       key,
+      webhook,
       endpoint: typeof arg('captcha-endpoint') === 'string' ? arg('captcha-endpoint')
         : process.env.CAPTCHA_ENDPOINT || 'https://2captcha.com',
     });

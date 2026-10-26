@@ -28,8 +28,9 @@ npm start
    побайтовый XOR даёт куку `hchk`, запрос повторяется, как их JS.
 2. **Капча.** Снимает свежую пару `captcha_token` + картинку через
    `GET /captcha/refresh/login`, отдаёт картинку солверу:
-   - `manual` — сохраняет в `captcha-todo.png` и ждёт ввода с клавиатуры
-     (по умолчанию; нужен интерактивный терминал); для скриптов `--captcha-code CODE`.
+   - `manual` (по умолчанию) — картинка улетает в **Discord-вебхук** (если задан)
+     и сохраняется в `captcha-todo.png`; код вводится с клавиатуры (или кладётся
+     в файл `captcha_code.txt` — для неинтерактивного запуска).
    - `api` — платный сервис: `--captcha-mode api --captcha-key КЛЮЧ`
      (2captcha / rucaptcha / anticaptcha — совместимый API).
 3. **Логин.** `POST /login` с полями `hv` (обратный `data-k`), `username`,
@@ -56,6 +57,7 @@ npm start
 --captcha-key KEY    ключ сервиса капчи (mode=api)
 --captcha-endpoint U адрес сервиса (по умолчанию https://2captcha.com)
 --captcha-code CODE  готовый код капчи (неинтерактивный запуск, совпадает со свежей картинкой)
+--discord-webhook URL   слать картинку капчи в Discord (или env / creds.txt: discord_webhook)
 ```
 
 ## Примеры
@@ -70,7 +72,10 @@ npm run login
 # Капча через платный сервис
 npm start -- --captcha-mode api --captcha-key 1234567890abcdef
 
-# Неинтерактивно: посмотрел captcha-todo.png, ввёл код
+# Картинку капчи в Discord, код — в консоль (или в файл captcha_code.txt)
+npm start -- --discord-webhook https://discord.com/api/webhooks/...
+
+# Неинтерактивно: посмотрел captcha-todo.png (или Discord), ввёл код
 npm start -- --captcha-code XYZ
 ```
 

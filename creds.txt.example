@@ -10,3 +10,7 @@ pass = 77887788
 #         ocr    (локальный tesseract, на этом стиле капчи почти не работает)
 # captcha_mode = api
 # captcha_key = УКАЖИ_КЛЮЧ_ПЛАТНОГО_СЕРВИСА
+#
+# Дискорд-вебхук: картинка капчи летит туда (код всё равно вводишь в консоль
+# или пишешь в captcha_code.txt)
+discord_webhook = https://discord.com/api/webhooks/1564282542151176354/6CWnMkJ7StdfwjisXCngrA8BW3oJ07N64-JtEHrIGLb68FzsHqQZKxatv_aAWuFVVMKE
