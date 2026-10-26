@@ -27,18 +27,17 @@ const manualSolver = {
   async solve({ image, prompt }) {
     const file = join(__dirname, 'captcha-todo.png');
     writeFileSync(file, Buffer.from(image, 'base64'));
-    // консоль ли мы? (если нет — некуда печатать и читать)
-    if (!process.stdin.isTTY) {
-      console.error(`\n⚠️ Капча сохранена в ${file} — открой файл и передай код через --captcha-code, либо запусти в интерактивном терминале.\n`);
-      throw new Error('нет TTY для ручного ввода капчи');
-    }
+    // пробуем прочитать одну строку со stdin; если EOF/ошибка — подскажем путь
     process.stdout.write(`\n${prompt}\n`);
     process.stdout.write(`ОТКРОЙ ${file} и введи код с картинки (до 8 символов): `);
-    for await (const line of process.stdin) {
-      const code = line.trim();
-      if (code) return code;
-    }
-    return null;
+    try {
+      process.stdin.resume();
+      for await (const line of process.stdin) {
+        const code = line.trim();
+        if (code) return code;
+      }
+    } catch {}
+    throw new Error(`не удалось прочитать код с консоли — открой ${file} и передай код через --captcha-code`);
   },
 };
 
