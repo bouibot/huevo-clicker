@@ -134,10 +134,10 @@ while (!stop && Date.now() < deadline && (!LIMIT || acc.stats.clicks < LIMIT)) {
   }
 
   if (j?.__http === 401 || j?.__http === 403) {
-    // сессия умерла — чистим куки и логинимся заново (новая капча)
+    // сессия умерла или заблокирован — чистим куки и логинимся заново (новая капча)
     acc.jar.clear();
     acc.stats.relogins++;
-    log(`HTTP ${j.__http} — перелогин #${acc.stats.relogins}`);
+    log(`HTTP ${j.__http} — перелогин #${acc.stats.relogins}${j.__text ? ' | ' + String(j.__text).slice(0, 100) : ''}`);
     await acc.signIn().catch((e) => log('логин не удался:', e.message));
     continue;
   }

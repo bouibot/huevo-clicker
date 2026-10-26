@@ -10,13 +10,18 @@ captcha_code.txt
 # Captcha artifacts / temp
 captcha-todo.png
 captcha-set/
+captcha_code.txt
 glyph-*.png
+verify-captcha.png
+trace-*.html
+trace-*.png
+t-*.html
+home-login.html
+huevo-app.js
 debug-*.log
 dump-*.txt
 probe-*
 page_*.html
-home.html
-login-page.html
 
 # State / logs
 *.log

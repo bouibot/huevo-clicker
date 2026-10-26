@@ -131,7 +131,7 @@ export class Account {
           headers: {
             'User-Agent': UA,
             'Accept-Language': 'en-US,en;q=0.9',
-            'Accept-Encoding': 'gzip, deflate, br, zstd',
+            'Accept-Encoding': 'gzip, deflate, br',
             Cookie: this.cookieHeader(),
             ...extra,
           },
@@ -185,6 +185,9 @@ export class Account {
 
       let json = null;
       try { json = JSON.parse(text); } catch {}
+      if (process.env.HUE_DEBUG) {
+        this.log(`[dbg] ${rest.method || 'GET'} ${url} → ${res.status}${json ? ' ' + JSON.stringify(json).slice(0, 120) : ''}${!json && text ? ' | ' + text.slice(0, 100).replace(/\s+/g, ' ') : ''}`);
+      }
       return { status: res.status, text, json, url: target, headers: res.headers };
     }
   }
@@ -237,31 +240,35 @@ export class Account {
       return { reused: true };
     }
 
-    // 1) страница логина (автоматически пробивает антибот)
-    const page = await this.req(`${BASE}/login`, {
-      headers: { Accept: 'text/html,application/xhtml+xml,*/*' },
-    });
-    const dataK = page.text.match(/data-k="([^"]+)"/)?.[1];
-    if (!dataK) throw new Error('не нашёл data-k на /login — сайт поменялся?');
-
-    // 2) капча: сначала берём прямо из формы на странице (без лишнего запроса),
-    //    потом — свежие через /captcha/refresh (на каждую попытку).
-    const pageCap = Account.parsePageCaptcha(page.text);
-    let nextCap = pageCap
-      ? async () => ({ ...pageCap, base64: await this.fetchImageB64(pageCap.url) })
-      : () => this.refreshCaptcha();
-
     const MAX_TRY = 4;
     for (let attempt = 1; attempt <= MAX_TRY; attempt++) {
+      // свежая страница логина на КАЖДУЮ попытку: свежий hchk (антибот) и data-k.
+      // копить их в прошлой попытке нельзя — протухшие куки дают 403 на POST.
+      let page, dataK;
+      try {
+        page = await this.req(`${BASE}/login`, {
+          headers: { Accept: 'text/html,application/xhtml+xml,*/*' },
+        });
+        dataK = page.text.match(/data-k="([^"]+)"/)?.[1];
+      } catch (e) {
+        this.log(`⚠️ страница логина: ${e.message}; пауза 5с`);
+        await sleep(5000);
+        continue;
+      }
+      if (!dataK) throw new Error('не нашёл data-k на /login — сайт поменялся?');
+
+      // капча: из формы на свежей странице, либо /captcha/refresh
+      const pageCap = Account.parsePageCaptcha(page.text);
       let cap;
       try {
-        cap = await nextCap();
+        cap = pageCap
+          ? { ...pageCap, base64: await this.fetchImageB64(pageCap.url) }
+          : await this.refreshCaptcha();
       } catch (e) {
         this.log(`⚠️ ${e.message}; пауза 10с`);
         await sleep(10000);
         continue;
       }
-      nextCap = () => this.refreshCaptcha(); // дальше только свежие
 
       let code = null;
       try {
@@ -275,7 +282,8 @@ export class Account {
       }
       if (!code) { await sleep(2000); continue; }
 
-      const hv = [...dataK].reverse().join(''); // их JS: data-k.split('').reverse().join('')
+      // свежий data-k → hv (их JS: data-k.split('').reverse().join(''))
+      const hv = [...dataK].reverse().join('');
       const form = new URLSearchParams({
         hv, username: this.login, password: this.pass,
         captcha_token: cap.token, captcha: code.trim(),
