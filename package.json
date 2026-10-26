@@ -1,9 +1,9 @@
 {
   "name": "huevo-clicker",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "type": "module",
-  "description": "huevo.su auto-clicker with auto-login. Single account, no proxies, no farm.",
+  "description": "huevo.su auto-clicker: auto-login (captcha), automatic cookie save/reuse, single account.",
   "main": "clicker.mjs",
   "scripts": {
     "start": "node clicker.mjs",
@@ -14,8 +14,9 @@
     "type": "git",
     "url": ""
   },
-  "keywords": ["huevo", "clicker", "autoclicker", "autologin"],
+  "keywords": ["huevo", "clicker", "autoclicker", "autologin", "captcha"],
   "dependencies": {
+    "tesseract.js": "^7.0.0",
     "undici": "^8.12.2"
   },
   "engines": {

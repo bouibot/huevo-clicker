@@ -4,7 +4,19 @@ node_modules/
 # Secrets & local config
 creds.txt
 cookie.txt
+captcha_code.txt
 *.local.*
+
+# Captcha artifacts / temp
+captcha-todo.png
+captcha-set/
+glyph-*.png
+debug-*.log
+dump-*.txt
+probe-*
+page_*.html
+home.html
+login-page.html
 
 # State / logs
 *.log
